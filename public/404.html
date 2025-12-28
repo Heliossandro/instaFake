@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página Não Encontrada</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: #fafafa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .error-container {
+            max-width: 500px;
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #dbdbdb;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 120px;
+            color: #262626;
+            margin-bottom: 10px;
+            line-height: 1;
+        }
+        
+        h2 {
+            color: #8e8e8e;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+        
+        p {
+            color: #262626;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .back-button {
+            display: inline-block;
+            background: #0095f6;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+        
+        .back-button:hover {
+            background: #1877f2;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: left;
+            border-left: 4px solid #0095f6;
+        }
+        
+        .info-box h3 {
+            color: #262626;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-box h3 i {
+            color: #0095f6;
+        }
+        
+        .user-info {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #e9ecef;
+        }
+        
+        .timestamp {
+            font-size: 12px;
+            color: #6c757d;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .academic-note {
+            font-size: 11px;
+            color: #8e8e8e;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #dbdbdb;
+        }
+        
+        .loading-bar {
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .loading-progress {
+            height: 100%;
+            background: #0095f6;
+            width: 0%;
+            animation: loading 3s ease-in-out forwards;
+        }
+        
+        @keyframes loading {
+            to { width: 100%; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="error-container">
+        <h1>404</h1>
+        <h2>Página Não Encontrada</h2>
+        <p>A página que você está tentando acessar não existe ou foi removida.</p>
+        
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+        
+        <a href="/" class="back-button">
+            <i class="fas fa-arrow-left"></i> Voltar ao Login
+        </a>
+        
+        <div class="info-box">
+            <h3><i class="fas fa-envelope"></i> Notificação Enviada</h3>
+            <div class="user-info">
+                <p id="userMessage">Uma notificação foi enviada para o administrador do sistema.</p>
+                <p><strong>E-mail:</strong> zenosama892@gmail.com</p>
+                <p><strong>Status:</strong> <span style="color: #28a745;">✅ Enviado com sucesso</span></p>
+            </div>
+            <p>Esta ação faz parte de uma simulação acadêmica para estudo de sistemas de autenticação.</p>
+        </div>
+        
+        <div class="academic-note">
+            <p><strong>Projeto Acadêmico:</strong> Simulação de Sistema de Login com Monitoramento</p>
+            <p><strong>Disciplina:</strong> [Nome da Disciplina] | <strong>Professor:</strong> [Nome do Professor]</p>
+            <p><strong>Aluno:</strong> [Seu Nome] | <strong>Matrícula:</strong> [Sua Matrícula]</p>
+            <p><em>⚠️ Esta aplicação é apenas para fins educacionais.</em></p>
+        </div>
+        
+        <div class="timestamp" id="timestamp"></div>
+    </div>
+
+    <script>
+        // Mostrar informações do usuário
+        const urlParams = new URLSearchParams(window.location.search);
+        const user = urlParams.get('user');
+        
+        if (user) {
+            const userMessage = document.getElementById('userMessage');
+            userMessage.textContent = `O usuário "${decodeURIComponent(user)}" tentou acessar o sistema. Uma notificação foi enviada.`;
+        }
+        
+        // Mostrar data/hora atual
+        const now = new Date();
+        const timestamp = document.getElementById('timestamp');
+        timestamp.textContent = `Acesso em: ${now.toLocaleString('pt-BR')}`;
+        
+        // Redirecionar automaticamente após 10 segundos
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 10000);
+    </script>
+</body>
+</html>
