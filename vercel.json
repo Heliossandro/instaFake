@@ -10,8 +10,5 @@
     { "src": "/style.css", "dest": "/public/style.css" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "/public/404.html" }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }
