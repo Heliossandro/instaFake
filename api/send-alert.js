@@ -1,34 +1,44 @@
 const nodemailer = require('nodemailer');
 
-// Configurar transporter de e-mail
+// ✅ Função ÚNICA para criar transporter (mantenha APENAS esta)
 const createTransporter = () => {
-    // Usar APENAS variáveis de ambiente
     const emailUser = process.env.EMAIL_USER;
     const emailPass = process.env.EMAIL_PASS;
     
     if (!emailUser || !emailPass) {
         console.error('❌ Variáveis de e-mail não configuradas');
-        console.log('EMAIL_USER:', emailUser ? 'Configurado' : 'NÃO CONFIGURADO');
-        console.log('EMAIL_PASS:', emailPass ? 'Configurado' : 'NÃO CONFIGURADO');
         return null;
     }
     
     console.log('📧 Configurando e-mail com:', emailUser);
     
     return nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // true para 465, false para 587
         auth: {
             user: emailUser,
             pass: emailPass
         },
-        // Configurações adicionais importantes
         tls: {
             rejectUnauthorized: false
-        }
+        },
+        // IMPORTANTE para Gmail
+        requireTLS: true,
+        logger: true,
+        debug: true
     });
 };
 
 export default async function handler(req, res) {
+    // ✅ ADICIONE ESTAS LINHAS NO INÍCIO DA FUNÇÃO:
+    console.log('=== DEBUG VARIÁVEIS AMBIENTE ===');
+    console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'SIM' : 'NÃO');
+    console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? 'SIM (oculto)' : 'NÃO');
+    console.log('ADMIN_EMAIL:', process.env.ADMIN_EMAIL || 'NÃO configurado');
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('==============================');
+    
     // Configurar CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -38,6 +48,20 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') {
         res.status(200).end();
         return;
+    }
+
+    // ✅ ADICIONE ROTA GET PARA TESTE
+    if (req.method === 'GET') {
+        return res.status(200).json({
+            status: 'API funcionando',
+            emailConfig: {
+                EMAIL_USER: process.env.EMAIL_USER ? 'Configurado' : 'NÃO',
+                EMAIL_PASS: process.env.EMAIL_PASS ? 'Configurado' : 'NÃO',
+                ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'NÃO',
+                NODE_ENV: process.env.NODE_ENV || 'development'
+            },
+            timestamp: new Date().toISOString()
+        });
     }
 
     if (req.method !== 'POST') {
@@ -59,7 +83,7 @@ export default async function handler(req, res) {
             });
         }
 
-        // Criar transporter
+        // ✅ CHAMAR a função para criar o transporter (FALTAVA ISSO!)
         const transporter = createTransporter();
         
         if (!transporter) {
